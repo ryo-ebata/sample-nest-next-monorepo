@@ -2,6 +2,7 @@
     "name": "sample-nest-next-monorepo",
     "version": "1.0.0",
     "private": true,
+    "packageManager": "pnpm@10.0.0",
     "description": "pnpm Monorepo with Next.js frontend and NestJS backend",
     "scripts": {
         "build": "turbo build",
