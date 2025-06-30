@@ -1,5 +1,5 @@
 {
-  "extends": "../../packages/tsconfig/nest.json",
+  "extends": "@sample/tsconfig/nest.json",
   "compilerOptions": {
     "paths": {
       "@api/*": ["./src/*"]

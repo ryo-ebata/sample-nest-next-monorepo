@@ -35,7 +35,7 @@ RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --no-frozen-lockf
 
 # ソースコードをコピーし、ビルドを実行
 COPY --from=pruner /app/out/full/ .
-COPY turbo.json .
+COPY ../turbo.json ./
 # '@sample/api'をビルドし、apps/api/dist ディレクトリを生成
 RUN turbo build --filter=@sample/api
 
@@ -46,6 +46,9 @@ FROM builder AS deployer
 # pnpm deployコマンドを使い、ビルド成果物とプロダクション依存関係のみを /deploy に抽出
 # 事前に apps/api/package.json の "files" に "dist" を含めることが必須
 RUN pnpm --filter @sample/api deploy --prod /deploy
+# === 証拠取得用: deployディレクトリの内容を詳細に出力 ===
+RUN find /deploy
+RUN cat /deploy/package.json
 
 # --- ステージ 5: ランナー ---
 # 最小構成のプロダクションイメージ

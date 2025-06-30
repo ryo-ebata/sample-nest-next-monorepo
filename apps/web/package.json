@@ -17,6 +17,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^2.0.0",
+    "@sample/tsconfig": "workspace:*",
     "typescript": "^5",
     "@types/node": "^20",
     "@types/react": "^19",
