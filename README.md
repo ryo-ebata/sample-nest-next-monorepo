@@ -27,14 +27,16 @@
 │   ├── ui/           # 共有Reactコンポーネント (Next.js用)
 │   │   ├── src/
 │   │   └── package.json
-│   ├── eslint-config-custom/ # 共有ESLint設定
-│   │   └── index.js
+│   ├── biome-config/ # 共有Biome設定 (v2.0対応)
+│   │   ├── src/
+│   │   └── package.json
 │   └── tsconfig-custom/      # 共有tsconfig.jsonベース
 │       └── base.json
 ├──.gitignore
 ├── package.json      # ルートpackage.json
 ├── pnpm-lock.yaml
 ├── pnpm-workspace.yaml
+├── biome.json        # Biome v2.0設定ファイル
 └── turbo.json
 ```
 
@@ -283,7 +285,19 @@ ENV PORT 3000
 CMD ["node", "dist/main.js"]
 ```
 
-このapi用のDockerfileは、turbo pruneによるビルド環境の最適化と、pnpm deployによる最終アーティファクトのクリーンな抽出という、2つの強力なテクニックを組み合わせることで、ユーザーが直面していた課題を根本的に解決します。これにより、高速で信頼性が高く、セキュアなDockerイメージを体系的に生成することが可能になります。Part IV: 高度な設定とベストプラクティス初期設定を超えて、健全でスケーラブルなモノレポを維持するための「Day Two」オペレーションとパターンについて解説します。4.1. 共有設定の管理 (tsconfig, eslint)モノレポの大きな利点の一つは、設定の一元管理です。packages/tsconfig-customやpackages/eslint-config-customのような共有パッケージを作成することで、ボイラープレートを削減し、コードベース全体で一貫性を保つことができます 2。例えば、packages/tsconfig-custom/base.jsonに共通のTypeScript設定を定義します。
+このapi用のDockerfileは、turbo pruneによるビルド環境の最適化と、pnpm deployによる最終アーティファクトのクリーンな抽出という、2つの強力なテクニックを組み合わせることで、ユーザーが直面していた課題を根本的に解決します。これにより、高速で信頼性が高く、セキュアなDockerイメージを体系的に生成することが可能になります。
+
+## Part IV: 高度な設定とベストプラクティス
+
+初期設定を超えて、健全でスケーラブルなモノレポを維持するための「Day Two」オペレーションとパターンについて解説します。
+
+### 4.1. 共有設定の管理 (tsconfig, biome)
+
+モノレポの大きな利点の一つは、設定の一元管理です。packages/tsconfig-customやpackages/biome-configのような共有パッケージを作成することで、ボイラープレートを削減し、コードベース全体で一貫性を保つことができます 2。Biome v2.0の導入により、TypeScriptコンパイラに依存しない型推論機能、マルチファイル解析、改善されたモノレポサポートを活用できます。
+
+#### TypeScript設定の共有
+
+例えば、packages/tsconfig-custom/base.jsonに共通のTypeScript設定を定義します。
 
 ```JSON
 // packages/tsconfig-custom/base.json
@@ -301,7 +315,6 @@ CMD ["node", "dist/main.js"]
     "moduleResolution": "node",
     "noUnusedLocals": false,
     "noUnusedParameters": false,
-
     "preserveWatchOutput": true,
     "strict": true,
     "skipLibCheck": true
@@ -327,7 +340,90 @@ CMD ["node", "dist/main.js"]
 }
 ```
 
-このパターンにより、設定の変更が必要になった場合でも、一箇所を修正するだけでワークスペース全体に適用できます。4.2. common-typesによるフルスタックな型安全性モノレポがもたらす最も強力な利点は、フロントエンドとバックエンド間でのコード共有、特に型定義の共有です。packages/common-typesのようなパッケージを作成し、APIリクエスト/レスポンスのボディやデータモデルなどの共有インターフェースを定義します 9。
+#### Biome v2.0設定の共有
+
+Biome v2.0では、ネストした設定ファイルのサポートにより、より柔軟な設定管理が可能になりました。ルートのbiome.jsonで基本設定を定義し、各アプリケーションで必要に応じて拡張できます。
+
+```JSON
+// biome.json (ルート)
+{
+  "$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
+  "vcs": {
+    "enabled": true,
+    "clientKind": "git",
+    "useIgnoreFile": true
+  },
+  "files": {
+    "ignoreUnknown": false,
+    "ignore": [
+      "node_modules/**",
+      "dist/**",
+      ".next/**",
+      "build/**"
+    ]
+  },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "recommended": true,
+      "correctness": {
+        "noUnusedVariables": "error"
+      },
+      "suspicious": {
+        "noExplicitAny": "warn"
+      },
+      "style": {
+        "useConst": "error"
+      }
+    }
+  },
+  "formatter": {
+    "enabled": true,
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "lineWidth": 80
+  },
+  "organizeImports": {
+    "enabled": true
+  }
+}
+```
+
+各アプリケーションでは、必要に応じて特定の設定をオーバーライドできます：
+
+```JSON
+// apps/web/biome.json
+{
+  "extends": ["//"],
+  "linter": {
+    "rules": {
+      "style": {
+        "useImportType": "error"
+      }
+    }
+  }
+}
+```
+
+```JSON
+// apps/api/biome.json
+{
+  "extends": ["//"],
+  "linter": {
+    "rules": {
+      "correctness": {
+        "noUnusedVariables": "error"
+      }
+    }
+  }
+}
+```
+
+このパターンにより、設定の変更が必要になった場合でも、一箇所を修正するだけでワークスペース全体に適用できます。Biome v2.0のマルチファイル解析機能により、プロジェクト全体の一貫性がより確実に保たれます。
+
+### 4.2. common-typesによるフルスタックな型安全性
+
+モノレポがもたらす最も強力な利点は、フロントエンドとバックエンド間でのコード共有、特に型定義の共有です。packages/common-typesのようなパッケージを作成し、APIリクエスト/レスポンスのボディやデータモデルなどの共有インターフェースを定義します 9。
 
 ```TypeScript
 // packages/common-types/src/user.ts

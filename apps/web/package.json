@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "biome lint .",
+    "format": "biome format --write .",
+    "check": "biome check ."
   },
   "dependencies": {
     "react": "^19.0.0",
@@ -14,6 +16,7 @@
     "next": "15.3.4"
   },
   "devDependencies": {
+    "@biomejs/biome": "^2.0.0",
     "typescript": "^5",
     "@types/node": "^20",
     "@types/react": "^19",
