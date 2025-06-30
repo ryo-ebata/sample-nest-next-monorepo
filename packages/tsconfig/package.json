@@ -1,0 +1,17 @@
+{
+  "name": "@sample/tsconfig",
+  "version": "1.0.0",
+  "private": true,
+  "description": "共通TypeScript設定",
+  "main": "base.json",
+  "files": [
+    "base.json",
+    "nest.json",
+    "next.json"
+  ],
+  "keywords": [
+    "typescript",
+    "tsconfig",
+    "monorepo"
+  ]
+} 
