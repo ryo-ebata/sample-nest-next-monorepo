@@ -1,0 +1,46 @@
+{
+  "name": "@sample/shared-lib",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Next.jsとNestJSアプリケーションで共有利用するTypeScriptライブラリ",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:ui": "vitest --ui",
+    "coverage": "vitest run --coverage",
+    "clean": "rm -rf dist"
+  },
+  "keywords": [
+    "typescript",
+    "shared",
+    "monorepo",
+    "nextjs",
+    "nestjs",
+    "validation",
+    "types",
+    "utilities"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0",
+    "vitest": "^3.2.4",
+    "@vitest/ui": "^3.2.4",
+    "c8": "^10.1.3"
+  },
+  "dependencies": {
+    "zod": "^3.22.0"
+  },
+  "peerDependencies": {
+    "typescript": ">=5.0.0"
+  }
+}
