@@ -96,3 +96,94 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 ## License
 
 Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+
+# API Application
+
+NestJS + Prisma + PostgreSQL のAPIアプリケーション
+
+## セットアップ
+
+### 1. 環境変数の設定
+
+```bash
+# apps/api/.env ファイルを作成
+cp apps/api/.env.example apps/api/.env
+```
+
+`.env` ファイルの内容:
+```env
+DATABASE_URL="postgresql://sample_user:sample_password@localhost:5432/sample_db?schema=public"
+NODE_ENV=development
+PORT=3000
+```
+
+### 2. データベースの起動
+
+```bash
+# PostgreSQLとpgAdminを起動
+docker-compose up -d postgres pgadmin
+```
+
+### 3. Prismaのセットアップ
+
+```bash
+# Prismaクライアントの生成
+cd apps/api
+pnpm prisma:generate
+
+# データベースマイグレーション
+pnpm prisma:migrate
+```
+
+### 4. アプリケーションの起動
+
+```bash
+# 開発モードで起動
+pnpm start:dev
+```
+
+## データベース管理
+
+### pgAdminへのアクセス
+- URL: http://localhost:8080
+- Email: admin@sample.com
+- Password: admin_password
+
+### Prisma Studio
+```bash
+cd apps/api
+pnpm prisma:studio
+```
+
+## API エンドポイント
+
+### Users
+- `GET /users` - 全ユーザー取得
+- `GET /users/:id` - 特定ユーザー取得
+- `POST /users` - ユーザー作成
+- `PATCH /users/:id` - ユーザー更新
+- `DELETE /users/:id` - ユーザー削除
+
+## Docker での実行
+
+```bash
+# アプリケーションをビルド
+docker build -f apps/api/Dockerfile -t sample-api .
+
+# コンテナを起動
+docker run -p 3000:3000 --env-file apps/api/.env sample-api
+```
+
+## 開発
+
+### 新しいマイグレーションの作成
+```bash
+cd apps/api
+pnpm prisma:migrate --name migration_name
+```
+
+### シードデータの実行
+```bash
+cd apps/api
+pnpm prisma:seed
+```

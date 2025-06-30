@@ -17,6 +17,7 @@
       "!**/*.log"
     ]
   },
+  
   "linter": {
     "enabled": true,
     "rules": {
@@ -31,7 +32,7 @@
       },
       "style": {
         "useConst": "error",
-        "useImportType": "error",
+        "useImportType": "off",
         "noParameterAssign": "error",
         "useAsConstAssertion": "error",
         "useDefaultParameterLast": "error",
@@ -61,8 +62,17 @@
     "lineWidth": 80,
     "lineEnding": "lf"
   },
-  "assist": { "actions": { "source": { "organizeImports": "on" } } },
+  "assist": { 
+    "actions": { 
+      "source": { 
+        "organizeImports": "on" 
+      } 
+    } 
+  },
   "javascript": {
+    "parser": {
+      "unsafeParameterDecoratorsEnabled": true
+    },
     "formatter": {
       "quoteStyle": "single",
       "trailingCommas": "es5",

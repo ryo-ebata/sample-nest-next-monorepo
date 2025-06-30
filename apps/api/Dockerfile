@@ -36,6 +36,10 @@ RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --no-frozen-lockf
 # ソースコードをコピーし、ビルドを実行
 COPY --from=pruner /app/out/full/ .
 COPY ../turbo.json ./
+
+# Prismaクライアントを生成
+RUN cd apps/api && npx prisma generate
+
 # '@sample/api'をビルドし、apps/api/dist ディレクトリを生成
 RUN turbo build --filter=@sample/api
 
@@ -67,5 +71,5 @@ COPY --from=deployer --chown=nodejs:nodejs /deploy .
 EXPOSE 3000
 ENV PORT=3000
 
-# NestJSアプリケーションを起動
+# データベース接続を待ってからアプリケーションを起動
 CMD ["node", "dist/main.js"] 
